@@ -17,13 +17,15 @@ def load_notes():
             line = line.strip()
             if "|" in line:
                 nid, text = line.split("|", 1)
-                notes.append({"id": nid, "text": text})
+                real_text = text.replace("\\n", "\n")
+                notes.append({"id": nid, "text": real_text})
     return notes
 
 def save_notes(notes):
     with open(NOTES_FILE, "w", encoding="utf-8") as f:
         for n in notes:
-            f.write(f"{n['id']}|{n['text']}\n")
+            flat_text = n['text'].replace("\n", "\\n")
+            f.write(f"{n['id']}|{flat_text}\n")
 
 @app.route("/")
 def index():
