@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Realtime Notes</title>
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+</head>
+<body>
+
+    <h1>Realtime Notes App</h1>
+
+    <ul id="notes">
+        {% for note in notes %}
+        <li id="note-{{ note.id }}">
+            {{ note.text }}
+            <button onclick="deleteNote('{{ note.id }}')">Delete</button>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <textarea id="input" rows="3" cols="40"></textarea><br>
+    <button onclick="sendNote()">Add Note</button>
+
+    <script>
+        const socket = io();
+
+        function sendNote() {
+            const text = document.getElementById("input").value;
+            socket.emit("add_note", text);
+            document.getElementById("input").value = "";
+        };
+
+        function deleteNote(id) {
+            socket.emit("delete_note", id);
+        };
+
+        socket.on("note_added", (note) => {
+            const li = document.createElement("li");
+            li.id = "note-" + note.id;
+            li.innerHTML = `
+                ${note.text}
+                <button onclick="deleteNote('${note.id}')">Delete</button>
+            `;
+            document.getElementById("notes").appendChild(li);
+        });
+
+        socket.on("note_deleted", (id) => {
+            const li = document.getElementById("note-" + id);
+            if (li) li.remove();
+        });
+    </script>
+
+</body>
+</html>
