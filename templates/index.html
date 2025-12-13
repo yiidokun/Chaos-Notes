@@ -9,12 +9,6 @@
     <h1>Realtime Notes App</h1>
 
     <ul id="notes">
-        {% for note in notes %}
-        <li id="note-{{ note.id }}">
-            {{ note.text }}
-            <button onclick="deleteNote('{{ note.id }}')">Delete</button>
-        </li>
-        {% endfor %}
     </ul>
 
     <textarea id="input" rows="3" cols="40"></textarea><br>
@@ -47,6 +41,10 @@
             const li = document.getElementById("note-" + id);
             if (li) li.remove();
         });
+
+        window.onload = function() {
+            socket.emit("request_notes");
+        };
     </script>
 
 </body>

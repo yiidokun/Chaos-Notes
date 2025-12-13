@@ -29,7 +29,7 @@ def save_notes(notes):
 
 @app.route("/")
 def index():
-    return render_template("index.html", notes=load_notes())
+    return render_template("index.html")
 
 @socketio.on("add_note")
 def on_add(note_text):
@@ -54,6 +54,12 @@ def on_delete(note_id):
     save_notes(notes)
 
     emit("note_deleted", note_id, broadcast=True)
+
+@socketio.on("request_notes")
+def on_request_notes():
+    notes = load_notes()
+    for note in notes:
+        emit("note_added", note)
 
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5000, debug=True)
